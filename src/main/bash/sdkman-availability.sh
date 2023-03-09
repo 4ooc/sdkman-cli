@@ -25,7 +25,8 @@ function __sdkman_determine_healthcheck_status() {
 	if [[ "$SDKMAN_OFFLINE_MODE" == "true" || "$COMMAND" == "offline" && "$QUALIFIER" == "enable" ]]; then
 		echo ""
 	else
-		echo $(__sdkman_secure_curl_with_timeouts "${SDKMAN_CANDIDATES_API}/healthcheck")
+		# echo $(__sdkman_secure_curl_with_timeouts "${SDKMAN_CANDIDATES_API}/healthcheck")
+		echo "emulate online"
 	fi
 }
 
