@@ -55,5 +55,5 @@ function __sdk_use() {
 	fi
 
 	echo ""
-	__sdkman_echo_green "Using ${candidate} version ${version} in this shell."
+	__sdkman_echo_green "Using ${candidate} version " $(__sdkman_mid_color '4;34m' $version) " in this shell."
 }
