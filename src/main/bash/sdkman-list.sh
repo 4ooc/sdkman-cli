@@ -18,11 +18,12 @@
 
 function __sdk_list() {
 	local candidate="$1"
+	local online="$2"
 
 	if [[ -z "$candidate" ]]; then
 		__sdkman_list_candidates
 	else
-		__sdkman_list_versions "$candidate"
+		__sdkman_list_versions "$candidate" "$online"
 	fi
 }
 
@@ -35,13 +36,14 @@ function __sdkman_list_candidates() {
 }
 
 function __sdkman_list_versions() {
-	local candidate versions_csv
+	local candidate versions_csv online
 
 	candidate="$1"
+	online="$2"
 	versions_csv="$(__sdkman_build_version_csv "$candidate")"
 	__sdkman_determine_current_version "$candidate"
 
-	if [[ "$SDKMAN_AVAILABLE" == "false" ]]; then
+	if [[ "$SDKMAN_AVAILABLE" == "false" || -z $online ]]; then
 		__sdkman_offline_list "$candidate" "$versions_csv"
 	else
 		__sdkman_echo_paged "$(__sdkman_secure_curl "${SDKMAN_CANDIDATES_API}/candidates/${candidate}/${SDKMAN_PLATFORM}/versions/list?current=${CURRENT}&installed=${versions_csv}")"
