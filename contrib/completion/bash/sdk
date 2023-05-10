@@ -72,14 +72,22 @@ __sdkman_complete_candidate_version() {
 		install|i)
 			while IFS= read -r -d, version || [[ -n "$version" ]]; do
 				candidates+=("$version")
-			done <<< "$(curl --silent "${SDKMAN_CANDIDATES_API}/candidates/$candidate/${SDKMAN_PLATFORM}/versions/all")"
+			done <<< "$(__sdkman_cache_versions $candidate $SDKMAN_PLATFORM)"
 			;;
 	esac
 
 	COMPREPLY=($(compgen -W "${candidates[*]}" -- "$candidate_version"))
 }
 
+__sdkman_cache_versions() {
+	local versions_file="${TMPDIR:-/tmp}/sdkman/${1}_${2}_versions"
+	if [[ -z "$(find $versions_file -type f -cmin -10)" ]]; then
+		local versions_api="${SDKMAN_CANDIDATES_API}/candidates/${1}/${2}/versions/all"
+		curl --silent --create-dirs -o "$versions_file" -s "$versions_api"
+	fi 
+	cat $versions_file
+}
+
 complete -o default -F _sdk sdk
 
 # Set 'sdkman_auto_complete' to 'true' in .sdkman/etc/config to enable completion
-
