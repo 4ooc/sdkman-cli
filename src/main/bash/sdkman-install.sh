@@ -133,6 +133,10 @@ function __sdkman_download() {
 
 	echo ""
 	__sdkman_echo_no_colour "Downloading: ${candidate} ${version}"
+	local download_size=$(__sdkman_curl_size "${download_url}")
+	if [[ -n "$download_size" ]]; then
+		__sdkman_echo_no_colour "${download_size:+"ContentSize: $download_size"}"
+	fi
 	echo ""
 	__sdkman_echo_no_colour "In progress..."
 	echo ""

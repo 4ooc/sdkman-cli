@@ -22,6 +22,10 @@ function __sdkman_echo_debug() {
 	fi
 }
 
+function __sdkman_curl_size() {
+	curl -sI --location "$1" | grep -i 'content-length' | tail -1 | awk '$2>0 {print ($2/1024/1024) " MB"}'
+}
+
 function __sdkman_secure_curl() {
 	if [[ ${sdkman_insecure_ssl} == 'true' ]]; then
 		curl --insecure --silent --location "$1"
