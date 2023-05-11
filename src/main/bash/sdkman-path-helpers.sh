@@ -21,7 +21,7 @@ function __sdkman_path_contains() {
 
 	candidate="$1"
 	exists="$(echo "$PATH" | grep "$candidate")"
-	if [[ -n "$exists" ]]; then
+	if [[ -n $exists ]]; then
 		echo 'true'
 	else
 		echo 'false'
@@ -32,21 +32,29 @@ function __sdkman_add_to_path() {
 	local candidate present
 
 	candidate="$1"
+	[[ $OSTYPE == "darwin"* && $candidate_dir =~ /java/ ]] && return
 
 	present=$(__sdkman_path_contains "$candidate")
-	if [[ "$present" == 'false' ]]; then
+	if [[ $present == 'false' ]]; then
 		PATH="$SDKMAN_CANDIDATES_DIR/$candidate/current/bin:$PATH"
 	fi
 }
 
+function __sdkman_candidate_home_name() {
+	local candidate
+	candidate="$1"
+
+	echo "$(echo "$candidate" | tr '[:lower:]' '[:upper:]')_HOME"
+}
+
 function __sdkman_set_candidate_home() {
-	local candidate version upper_candidate
+	local candidate version candidate_home
 
 	candidate="$1"
 	version="$2"
 
-	upper_candidate=$(echo "$candidate" | tr '[:lower:]' '[:upper:]')
-	export "${upper_candidate}_HOME"="${SDKMAN_CANDIDATES_DIR}/${candidate}/${version}"
+	candidate_home=$(__sdkman_candidate_home_name $candidate)
+	export "${candidate_home}"="${SDKMAN_CANDIDATES_DIR}/${candidate}/${version}"
 }
 
 function __sdkman_export_candidate_home() {
@@ -69,6 +77,8 @@ function __sdkman_prepend_candidate_to_path() {
 	local candidate_dir candidate_bin_dir
 
 	candidate_dir="$1"
+	[[ $OSTYPE == "darwin"* && $candidate_dir =~ /java/ ]] && return
+
 	candidate_bin_dir=$(__sdkman_determine_candidate_bin_dir "$candidate_dir")
 	echo "$PATH" | grep -q "$candidate_dir" || PATH="${candidate_bin_dir}:${PATH}"
 	unset CANDIDATE_BIN_DIR

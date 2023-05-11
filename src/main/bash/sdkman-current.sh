@@ -55,19 +55,17 @@ function __sdkman_determine_current_version() {
 
 	candidate="$1"
 	present=$(__sdkman_path_contains "${SDKMAN_CANDIDATES_DIR}/${candidate}")
-	if [[ "$present" == 'true' ]]; then
-		if [[ $PATH =~ ${SDKMAN_CANDIDATES_DIR}/${candidate}/([^/]+)/bin ]]; then
-			if [[ "$zsh_shell" == "true" ]]; then
-				CURRENT=${match[1]}
-			else
-				CURRENT=${BASH_REMATCH[1]}
-			fi
-		fi
+	if [[ $present == 'true' ]]; then
+		[[ $PATH =~ "${SDKMAN_CANDIDATES_DIR}/${candidate}/([^/]+)/bin" ]]
+	else if [[ "$OSTYPE" == "darwin"* && "${candidate}" == "java" ]];
+		local candidate_home_name=$(__sdkman_candidate_home_name $candidate)
+		local candidate_home=$(eval echo '$'${candidate_home_name})
+		[[ $candidate_home =~ "${SDKMAN_CANDIDATES_DIR}/${candidate}/([^/]+)" ]]
+	fi
 
-		if [[ "$CURRENT" == "current" ]]; then
-			CURRENT=$(readlink "${SDKMAN_CANDIDATES_DIR}/${candidate}/current" | sed "s!${SDKMAN_CANDIDATES_DIR}/${candidate}/!!g")
-		fi
-	else
-		CURRENT=""
+	CURRENT=${BASH_REMATCH[1]:-$match[1]}
+
+	if [[ $CURRENT == "current" ]]; then
+		CURRENT=$(readlink "${SDKMAN_CANDIDATES_DIR}/${candidate}/current" | sed "s!${SDKMAN_CANDIDATES_DIR}/${candidate}/!!g")
 	fi
 }
