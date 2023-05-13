@@ -30,39 +30,39 @@ function sdk() {
 	QUALIFIER="$2"
 
 	case "$COMMAND" in
-	l)
-		COMMAND="list"
-		;;
-	ls)
-		COMMAND="list"
-		;;
-	v)
-		COMMAND="version"
-		;;
-	u)
-		COMMAND="use"
-		;;
-	i)
-		COMMAND="install"
-		;;
-	rm)
-		COMMAND="uninstall"
-		;;
-	c)
-		COMMAND="current"
-		;;
-	ug)
-		COMMAND="upgrade"
-		;;
-	d)
-		COMMAND="default"
-		;;
-	h)
-		COMMAND="home"
-		;;
-	e)
-		COMMAND="env"
-		;;
+		l)
+			COMMAND="list"
+			;;
+		ls)
+			COMMAND="list"
+			;;
+		v)
+			COMMAND="version"
+			;;
+		u)
+			COMMAND="use"
+			;;
+		i)
+			COMMAND="install"
+			;;
+		rm)
+			COMMAND="uninstall"
+			;;
+		c)
+			COMMAND="current"
+			;;
+		ug)
+			COMMAND="upgrade"
+			;;
+		d)
+			COMMAND="default"
+			;;
+		h)
+			COMMAND="home"
+			;;
+		e)
+			COMMAND="env"
+			;;
 	esac
 
 	#
@@ -70,7 +70,7 @@ function sdk() {
 	#
 
 	# Check candidates cache
-	if [[ "$COMMAND" != "update" ]]; then
+	if [[ $COMMAND != "update" ]]; then
 		___sdkman_check_candidates_cache "$SDKMAN_CANDIDATES_CACHE" || return 1
 	fi
 
@@ -84,33 +84,33 @@ function sdk() {
 	__sdkman_update_service_availability
 
 	# Load the sdkman config if it exists.
-	if [ -f "${SDKMAN_DIR}/etc/config" ]; then
-		source "${SDKMAN_DIR}/etc/config"
+	if [ -f "${XDG_CONFIG_HOME:-$HOME/.config}/sdkman/config" ]; then
+		source "${XDG_CONFIG_HOME:-$HOME/.config}/sdkman/config"
 	fi
 
 	# no command provided
-	if [[ -z "$COMMAND" ]]; then
+	if [[ -z $COMMAND ]]; then
 		___sdkman_help
 		return 1
 	fi
 
 	# Check if it is a valid command
 	CMD_FOUND=""
-	if [[ "$COMMAND" != "selfupdate" || "$sdkman_selfupdate_feature" == "true" ]]; then
-		CMD_TARGET="${SDKMAN_DIR}/src/sdkman-${COMMAND}.sh"
-		if [[ -f "$CMD_TARGET" ]]; then
+	if [[ $COMMAND != "selfupdate" || $sdkman_selfupdate_feature == "true" ]]; then
+		CMD_TARGET="${SDKMAN_INSTALL_DIR}/src/sdkman-${COMMAND}.sh"
+		if [[ -f $CMD_TARGET ]]; then
 			CMD_FOUND="$CMD_TARGET"
 		fi
 	fi
 
 	# Check if it is a sourced function
 	CMD_TARGET="${SDKMAN_DIR}/ext/sdkman-${COMMAND}.sh"
-	if [[ -f "$CMD_TARGET" ]]; then
+	if [[ -f $CMD_TARGET ]]; then
 		CMD_FOUND="$CMD_TARGET"
 	fi
 
 	# couldn't find the command
-	if [[ -z "$CMD_FOUND" ]]; then
+	if [[ -z $CMD_FOUND ]]; then
 		echo ""
 		__sdkman_echo_red "Invalid command: $COMMAND"
 		echo ""
@@ -118,7 +118,7 @@ function sdk() {
 	fi
 
 	# Validate offline qualifier
-	if [[ "$COMMAND" == "offline" && -n "$QUALIFIER" && -z $(echo "enable disable" | grep -w "$QUALIFIER") ]]; then
+	if [[ $COMMAND == "offline" && -n $QUALIFIER && -z $(echo "enable disable" | grep -w "$QUALIFIER") ]]; then
 		echo ""
 		__sdkman_echo_red "Stop! $QUALIFIER is not a valid offline mode."
 	fi
@@ -128,14 +128,14 @@ function sdk() {
 
 	# Native commands found under libexec
 	local native_command="${SDKMAN_DIR}/libexec/${COMMAND}"
-	
+
 	if [ -f "$native_command" ]; then
 		"$native_command" "${@:2}"
 
 	elif [ -n "$CMD_FOUND" ]; then
 
 		# Check whether the candidate exists
-		if [[ -n "$QUALIFIER" && "$COMMAND" != "help" && "$COMMAND" != "offline" && "$COMMAND" != "flush" && "$COMMAND" != "selfupdate" && "$COMMAND" != "env" && "$COMMAND" != "completion" && "$COMMAND" != "edit" && "$COMMAND" != "home" && -z $(echo ${SDKMAN_CANDIDATES[@]} | grep -w "$QUALIFIER") ]]; then
+		if [[ -n $QUALIFIER && $COMMAND != "help" && $COMMAND != "offline" && $COMMAND != "flush" && $COMMAND != "selfupdate" && $COMMAND != "env" && $COMMAND != "completion" && $COMMAND != "edit" && $COMMAND != "home" && -z $(echo ${SDKMAN_CANDIDATES[@]} | grep -w "$QUALIFIER") ]]; then
 			echo ""
 			__sdkman_echo_red "Stop! $QUALIFIER is not a valid candidate."
 			return 1

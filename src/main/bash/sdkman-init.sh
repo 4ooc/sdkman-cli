@@ -22,13 +22,15 @@ if [ -z "$SDKMAN_CANDIDATES_API" ]; then
 fi
 
 if [ -z "$SDKMAN_DIR" ]; then
-	export SDKMAN_DIR="$HOME/.sdkman"
+	export SDKMAN_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/sdkman"
 fi
 
 # Load the sdkman config if it exists.
-if [ -f "${SDKMAN_DIR}/etc/config" ]; then
-	source "${SDKMAN_DIR}/etc/config"
+if [ -f "${XDG_CONFIG_HOME:-$HOME/.config}/sdkman/config" ]; then
+	source "${XDG_CONFIG_HOME:-$HOME/.config}/sdkman/config"
 fi
+
+mkdir -p "${SDKMAN_DIR}"/tmp "${SDKMAN_DIR}"/ext "${SDKMAN_DIR}"/etc "${SDKMAN_DIR}"/var "${SDKMAN_DIR}"/candidates 
 
 # infer platform
 function infer_platform() {
@@ -125,9 +127,10 @@ fi
 # Use this if extensions are written with the functional approach and want
 # to use functions in the main sdkman script. For more details, refer to
 # <https://github.com/sdkman/sdkman-extensions>.
+export SDKMAN_INSTALL_DIR="$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)/..")"
 OLD_IFS="$IFS"
 IFS=$'\n'
-scripts=($(find "${SDKMAN_DIR}/src" "${SDKMAN_DIR}/ext" -type f -name 'sdkman-*.sh'))
+scripts=($(find "${SDKMAN_INSTALL_DIR}/src" "${SDKMAN_DIR}/ext" -type f -name 'sdkman-*.sh'))
 for f in "${scripts[@]}"; do
 	source "$f"
 done
@@ -154,6 +157,10 @@ if [[ -z "${sdkman_curl_continue}" ]]; then sdkman_curl_continue=true; fi
 
 # read list of candidates and set array
 SDKMAN_CANDIDATES_CACHE="${SDKMAN_DIR}/var/candidates"
+if [ ! -e "$SDKMAN_CANDIDATES_CACHE" ]; then
+	curl -s https://api.sdkman.io/2/candidates/all -o "$SDKMAN_CANDIDATES_CACHE"
+fi
+
 SDKMAN_CANDIDATES_CSV=$(<"$SDKMAN_CANDIDATES_CACHE")
 __sdkman_echo_debug "Setting candidates csv: $SDKMAN_CANDIDATES_CSV"
 if [[ "$zsh_shell" == 'true' ]]; then
@@ -188,10 +195,10 @@ if [[ "$sdkman_auto_complete" == 'true' ]]; then
 		fi
 		autoload -U bashcompinit
 		bashcompinit
-		source "${SDKMAN_DIR}/contrib/completion/bash/sdk"
+		source "${SDKMAN_INSTALL_DIR}/contrib/completion/bash/sdk"
 		__sdkman_echo_debug "ZSH completion script loaded..."
 	elif [[ "$bash_shell" == 'true' ]]; then
-		source "${SDKMAN_DIR}/contrib/completion/bash/sdk"
+		source "${SDKMAN_INSTALL_DIR}/contrib/completion/bash/sdk"
 		__sdkman_echo_debug "Bash completion script loaded..."
 	else
 		__sdkman_echo_debug "No completion scripts found for $SHELL"
