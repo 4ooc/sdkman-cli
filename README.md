@@ -1,3 +1,6 @@
+<details>
+<summary><b> <code>README</code> from <code>sdkman/sdkman-cli</code></b></summary>
+	
 # SDKMAN! CLI
 ### The Software Development Kit Manager Command Line Interface
 
@@ -8,6 +11,7 @@
 SDKMAN is a tool for managing parallel Versions of multiple Software Development Kits on any Unix based system. It provides a convenient command line interface for installing, switching, removing and listing Candidates.
 
 See documentation on the [SDKMAN! website](https://sdkman.io).
+
 
 ## Installation
 
@@ -77,3 +81,11 @@ Support this project by becoming a sponsor. Your logo will show up here with a l
 <a href="https://opencollective.com/sdkman/sponsor/7/website" target="_blank"><img src="https://opencollective.com/sdkman/sponsor/7/avatar.svg"></a>
 <a href="https://opencollective.com/sdkman/sponsor/8/website" target="_blank"><img src="https://opencollective.com/sdkman/sponsor/8/avatar.svg"></a>
 <a href="https://opencollective.com/sdkman/sponsor/9/website" target="_blank"><img src="https://opencollective.com/sdkman/sponsor/9/avatar.svg"></a>
+</details>
+
+# What I do
+1. Disable healthcheck request and emulate an echo response instead.
+2. By default, `sdk list $candidate` works in offline mode; providing any parameter will switch it to online mode.
+3. For a smoother `sdk install` experience, add a 10-minute cache for completion!
+4. Whenever possible, let users know the download size.
+5. Use `XDG_CONFIG_HOME` save configuration data, `XDG_DATA_HOME` save external data.
