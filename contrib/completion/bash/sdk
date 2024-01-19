@@ -81,7 +81,7 @@ __sdkman_complete_candidate_version() {
 
 __sdkman_cache_versions() {
 	local versions_file="${TMPDIR:-/tmp}/sdkman/${1}_${2}_versions"
-	if [[ -z "$(find $versions_file -type f -cmin -10)" ]]; then
+	if [[ -z "$(find $versions_file -type f -cmin -10 2>/dev/null)" ]]; then
 		local versions_api="${SDKMAN_CANDIDATES_API}/candidates/${1}/${2}/versions/all"
 		curl --silent --create-dirs -o "$versions_file" -s "$versions_api"
 	fi 
