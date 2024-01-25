@@ -127,7 +127,8 @@ fi
 # Use this if extensions are written with the functional approach and want
 # to use functions in the main sdkman script. For more details, refer to
 # <https://github.com/sdkman/sdkman-extensions>.
-export SDKMAN_INSTALL_DIR="$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)/..")"
+this_path="$(realpath "${BASH_SOURCE[0]:-$0}")"
+export SDKMAN_INSTALL_DIR="$(dirname "$this_path")"
 OLD_IFS="$IFS"
 IFS=$'\n'
 scripts=($(find "${SDKMAN_INSTALL_DIR}/src" "${SDKMAN_DIR}/ext" -type f -name 'sdkman-*.sh'))
@@ -135,7 +136,7 @@ for f in "${scripts[@]}"; do
 	source "$f"
 done
 IFS="$OLD_IFS"
-unset OLD_IFS scripts f
+unset OLD_IFS scripts this_path f
 
 # Create upgrade delay file if it doesn't exist
 if [[ ! -f "${SDKMAN_DIR}/var/delay_upgrade" ]]; then

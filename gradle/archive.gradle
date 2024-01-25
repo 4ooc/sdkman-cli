@@ -5,7 +5,7 @@ def baseDir = "$buildDir/stage/sdkman-${ext.sdkmanVersion}"
 
 task prepareBin(type: Copy) {
 	from('src/main/bash')
-	into("$baseDir/bin")
+	into("$baseDir/")
 	include('**/sdkman-init.sh')
 	filter(
 			ReplaceTokens,
