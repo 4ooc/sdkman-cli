@@ -1,0 +1,3 @@
+#compdef sdk
+
+source "${SDKMAN_INSTALL_DIR}/contrib/completion/bash/sdk"
