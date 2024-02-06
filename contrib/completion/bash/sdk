@@ -85,9 +85,12 @@ __sdkman_cache_versions() {
 		local versions_api="${SDKMAN_CANDIDATES_API}/candidates/${1}/${2}/versions/all"
 		curl --silent --create-dirs -o "$versions_file" -s "$versions_api"
 	fi 
-	cat $versions_file
+
+	if [[ -f "$versions_file" ]]; then
+      cat $versions_file
+    fi
 }
 
-complete -o default -F _sdk sdk
+complete -F _sdk sdk
 
 # Set 'sdkman_auto_complete' to 'true' in .sdkman/etc/config to enable completion
