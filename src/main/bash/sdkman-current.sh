@@ -57,7 +57,7 @@ function __sdkman_determine_current_version() {
 	present=$(__sdkman_path_contains "${SDKMAN_CANDIDATES_DIR}/${candidate}")
 	if [[ $present == 'true' ]]; then
 		[[ $PATH =~ "${SDKMAN_CANDIDATES_DIR}/${candidate}/([^/]+)/bin" ]]
-	else if [[ "$OSTYPE" == "darwin"* && "${candidate}" == "java" ]];
+	elif [[ "$OSTYPE" == "darwin"* && "${candidate}" == "java" ]]; then
 		local candidate_home_name=$(__sdkman_candidate_home_name $candidate)
 		local candidate_home=$(eval echo '$'${candidate_home_name})
 		[[ $candidate_home =~ "${SDKMAN_CANDIDATES_DIR}/${candidate}/([^/]+)" ]]
