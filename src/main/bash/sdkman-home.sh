@@ -17,23 +17,19 @@
 #
 
 function __sdk_home() {
-	local candidate version
+	local candidate version candidate_path version_path
 
 	candidate="$1"
 	version="$2"
-	__sdkman_check_version_present "$version" || return 1
-	__sdkman_check_candidate_present "$candidate" || return 1
-	__sdkman_determine_version "$candidate" "$version" || return 1
 
-	if [[ ! -d "${SDKMAN_CANDIDATES_DIR}/${candidate}/${version}" ]]; then
-		echo ""
-		__sdkman_echo_red "Stop! Candidate version is not installed."
-		echo ""
-		__sdkman_echo_yellow "Tip: Run the following to install this version"
-		echo ""
-		__sdkman_echo_yellow "$ sdk install ${candidate} ${version}"
-		return 1
+	candidate_path="${SDKMAN_CANDIDATES_DIR}/${candidate}"
+	if [ -n "$candidate" ] && [ -d "${candidate_path}" ]; then
+		version_path="${candidate_path}/${version:-current}"
+		if [ -e "$version_path" ]; then
+			echo -n $(readlink -f "$version_path")
+			return
+		fi
 	fi
 
-	echo -n "${SDKMAN_CANDIDATES_DIR}/${candidate}/${version}"
+	return 1
 }

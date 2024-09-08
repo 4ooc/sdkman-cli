@@ -83,9 +83,11 @@ Support this project by becoming a sponsor. Your logo will show up here with a l
 <a href="https://opencollective.com/sdkman/sponsor/9/website" target="_blank"><img src="https://opencollective.com/sdkman/sponsor/9/avatar.svg"></a>
 </details>
 
-# What I do
+# What I do  
+
 1. Disable healthcheck request and emulate an echo response instead.
 2. By default, `sdk list $candidate` works in offline mode; providing any parameter will switch it to online mode.
 3. For a smoother `sdk install` experience, add a 10-minute cache for completion!
 4. Whenever possible, let users know the download size.
 5. Use `XDG_CONFIG_HOME` save configuration data, `XDG_DATA_HOME` save external data.
+6. Remove determine function from `sdk home`, return empty string on error
