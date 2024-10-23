@@ -210,10 +210,56 @@ if [[ "$sdkman_auto_env" == "true" ]]; then
 	if [[ "$zsh_shell" == "true" ]]; then
 		function sdkman_auto_env() {
 			if [[ -n $SDKMAN_ENV ]] && [[ ! $PWD =~ ^$SDKMAN_ENV ]]; then
-				sdk env clear
+				if [[ -e "$SDKMAN_ENV/.sdkmanrc" ]] then
+					sdk env clear
+				else
+					__sdkman_env_restore_default_version java
+				fi
+				unset SDKMAN_ENV
 			fi
+
+			if [[ -n $SDKMAN_ENV ]] && [[ $PWD =~ ^$SDKMAN_ENV ]] then
+				return
+			fi
+
 			if [[ -f .sdkmanrc ]]; then
 				sdk env
+			fi
+
+			local ROOT=${CODE_SPACE:-$HOME}
+			if [[ ! $PWD =~ ^$ROOT/ ]]; then
+				return 
+			fi
+
+			local current_dir="$PWD"
+			local workspace java_version
+			while [[ "$current_dir" != "$ROOT" ]]; do
+				if [[ -e "$current_dir/.sdkmanrc" || -e "$current_dir/build.gradle" ]]; then
+					workspace="$current_dir"
+					break 
+				fi
+				current_dir=$(dirname "$current_dir")
+			done
+
+			if [[ -z "$workspace" ]]; then
+				return
+			fi
+
+			if [[ -f "$workspace/.sdkmanrc" ]]; then
+				if [[ $workspace != $PWD ]]; then
+					java_version=$(cat "$workspace/.sdkmanrc" | grep ^java= | awk -F= '{print $2}')
+					sdk use java $java_version
+					SDKMAN_ENV="$workspace"
+				fi
+			elif [[ -f "$workspace/build.gradle" ]]; then
+				major_version=$(cat "$workspace/build.gradle" | grep 'sourceCompatibility' | grep -Eo '[0-9.]+' | sed s/^1\\.//)
+				java_version=$(sdk list java | awk '{print $2}' | grep -E "^$major_version\.")
+				if [[ -n $java_version ]]; then
+					sdk use java $java_version
+				else
+					__sdkman_echo_red "No java $major_version installed"
+				fi
+				SDKMAN_ENV="$workspace"
 			fi
 		}
 
